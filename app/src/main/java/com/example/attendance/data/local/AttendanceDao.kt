@@ -20,6 +20,9 @@ interface AttendanceDao {
     @Update
     suspend fun updateAttendance(attendance: Attendance)
 
+    @Delete
+    suspend fun deleteAttendance(attendance: Attendance)
+
     @Query("SELECT * FROM attendance WHERE employeeId = :employeeId ORDER BY checkInTime DESC LIMIT 1")
     suspend fun getLastAttendance(employeeId: Int): Attendance?
 

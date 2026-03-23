@@ -7,6 +7,7 @@ import com.example.attendance.data.repository.AttendanceRepository
 import com.example.attendance.util.TimeUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import java.util.*
 
 data class DailyAttendance(
@@ -40,13 +41,25 @@ class ReportsViewModel(private val repository: AttendanceRepository) : ViewModel
         filter.value = ReportFilter.CUSTOM
     }
 
+    fun updateAttendance(attendance: Attendance) {
+        viewModelScope.launch {
+            repository.updateAttendance(attendance)
+        }
+    }
+
+    fun deleteAttendance(attendance: Attendance) {
+        viewModelScope.launch {
+            repository.deleteAttendance(attendance)
+        }
+    }
+
     val employeeReports: LiveData<List<EmployeeReport>> = combine(
         repository.allEmployees,
         repository.allAttendance,
         filter,
         startDate,
         endDate
-    ) { employees, allAttendance, currentFilter, start, end ->
+    ) { employees: List<Employee>, allAttendance: List<Attendance>, currentFilter: ReportFilter, start: Long?, end: Long? ->
         
         val filteredAttendance = when (currentFilter) {
             ReportFilter.ALL -> allAttendance
@@ -88,13 +101,13 @@ class ReportsViewModel(private val repository: AttendanceRepository) : ViewModel
                 val minutes = (totalMillis / (1000 * 60)) % 60
                 DailyAttendance(
                     date = date,
-                    records = records,
+                    records = records.sortedByDescending { it.checkInTime },
                     totalDuration = String.format(Locale.getDefault(), "%02d hrs %02d mins", hours, minutes)
                 )
             }.sortedByDescending { it.records.firstOrNull()?.checkInTime ?: 0L }
 
             EmployeeReport(emp, dailyReports)
-        }.filter { it.dailyAttendance.isNotEmpty() } // Only show employees with attendance in the filtered range
+        }.filter { it.dailyAttendance.isNotEmpty() }
     }.asLiveData()
 }
 

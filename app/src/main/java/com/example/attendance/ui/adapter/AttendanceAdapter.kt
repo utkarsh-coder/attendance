@@ -9,20 +9,25 @@ import com.example.attendance.data.local.Attendance
 import com.example.attendance.databinding.ItemAttendanceBinding
 import com.example.attendance.util.TimeUtils
 
-class AttendanceAdapter : ListAdapter<Attendance, AttendanceAdapter.AttendanceViewHolder>(AttendanceDiffCallback()) {
+class AttendanceAdapter(
+    private val onEditClick: (Attendance) -> Unit,
+    private val onDeleteClick: (Attendance) -> Unit
+) : ListAdapter<Attendance, AttendanceAdapter.AttendanceViewHolder>(AttendanceDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttendanceViewHolder {
         val binding = ItemAttendanceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return AttendanceViewHolder(binding)
+        return AttendanceViewHolder(binding, onEditClick, onDeleteClick)
     }
 
     override fun onBindViewHolder(holder: AttendanceViewHolder, position: Int) {
-        val attendance = getItem(position)
-        holder.bind(attendance)
+        holder.bind(getItem(position))
     }
 
-    inner class AttendanceViewHolder(private val binding: ItemAttendanceBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class AttendanceViewHolder(
+        private val binding: ItemAttendanceBinding,
+        private val onEditClick: (Attendance) -> Unit,
+        private val onDeleteClick: (Attendance) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(attendance: Attendance) {
             binding.tvAttendanceDate.text = TimeUtils.formatDate(attendance.checkInTime)
             binding.tvCheckInTime.text = "In: ${TimeUtils.formatTime(attendance.checkInTime)}"
@@ -32,6 +37,14 @@ class AttendanceAdapter : ListAdapter<Attendance, AttendanceAdapter.AttendanceVi
                 "Out: --"
             }
             binding.tvDuration.text = "Duration: ${TimeUtils.calculateDuration(attendance.checkInTime, attendance.checkOutTime)}"
+            
+            binding.btnEditAttendance.setOnClickListener {
+                onEditClick(attendance)
+            }
+            
+            binding.btnDeleteAttendance.setOnClickListener {
+                onDeleteClick(attendance)
+            }
         }
     }
 

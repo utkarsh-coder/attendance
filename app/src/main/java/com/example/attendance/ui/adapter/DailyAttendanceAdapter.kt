@@ -9,18 +9,25 @@ import com.example.attendance.databinding.ItemAttendanceBinding
 import com.example.attendance.data.local.Attendance
 import com.example.attendance.util.TimeUtils
 
-class DailyAttendanceAdapter : ListAdapter<Attendance, DailyAttendanceAdapter.ViewHolder>(DiffCallback()) {
+class DailyAttendanceAdapter(
+    private val onEditClick: (Attendance) -> Unit,
+    private val onDeleteClick: (Attendance) -> Unit
+) : ListAdapter<Attendance, DailyAttendanceAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemAttendanceBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
+        return ViewHolder(binding, onEditClick, onDeleteClick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class ViewHolder(private val binding: ItemAttendanceBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(
+        private val binding: ItemAttendanceBinding,
+        private val onEditClick: (Attendance) -> Unit,
+        private val onDeleteClick: (Attendance) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(attendance: Attendance) {
             binding.tvAttendanceDate.text = TimeUtils.formatDate(attendance.checkInTime)
             binding.tvCheckInTime.text = "In: ${TimeUtils.formatTime(attendance.checkInTime)}"
@@ -30,6 +37,14 @@ class DailyAttendanceAdapter : ListAdapter<Attendance, DailyAttendanceAdapter.Vi
                 "Out: --"
             }
             binding.tvDuration.text = "Duration: ${TimeUtils.calculateDuration(attendance.checkInTime, attendance.checkOutTime)}"
+            
+            binding.btnEditAttendance.setOnClickListener {
+                onEditClick(attendance)
+            }
+            
+            binding.btnDeleteAttendance.setOnClickListener {
+                onDeleteClick(attendance)
+            }
         }
     }
 

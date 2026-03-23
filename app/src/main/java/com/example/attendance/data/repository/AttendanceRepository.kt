@@ -25,6 +25,10 @@ class AttendanceRepository(private val attendanceDao: AttendanceDao) {
         attendanceDao.updateAttendance(attendance)
     }
 
+    suspend fun deleteAttendance(attendance: Attendance) {
+        attendanceDao.deleteAttendance(attendance)
+    }
+
     suspend fun getLastAttendance(employeeId: Int): Attendance? {
         return attendanceDao.getLastAttendance(employeeId)
     }

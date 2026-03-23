@@ -26,6 +26,14 @@ class EmployeeDetailViewModel(private val repository: AttendanceRepository) : Vi
         }
     }
 
+    fun updateAttendance(attendance: Attendance) = viewModelScope.launch {
+        repository.updateAttendance(attendance)
+    }
+
+    fun deleteAttendance(attendance: Attendance) = viewModelScope.launch {
+        repository.deleteAttendance(attendance)
+    }
+
     fun getAttendanceFlow(employeeId: Int) = repository.getAttendanceForEmployee(employeeId).asLiveData()
 }
 
