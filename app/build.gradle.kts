@@ -74,4 +74,6 @@ dependencies {
     // SQLite runtime fixes
     implementation("androidx.sqlite:sqlite:2.4.0")
     implementation("androidx.sqlite:sqlite-framework:2.4.0")
+
+    implementation(libs.androidx.fragment.ktx)
 }
