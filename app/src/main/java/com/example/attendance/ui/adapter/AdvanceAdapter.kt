@@ -31,7 +31,9 @@ class AdvanceAdapter(
             binding.tvAdvanceAmount.text =
                 String.format(Locale.getDefault(), "₹ %.2f", advance.amount)
             binding.tvAdvanceDescription.text = advance.description
+            // Show date and time separately — both auto-captured at insert time
             binding.tvAdvanceDate.text = TimeUtils.formatDate(advance.timestamp)
+            binding.tvAdvanceTime.text = TimeUtils.formatTime(advance.timestamp)
             binding.btnEditAdvance.setOnClickListener { onEditClick(advance) }
             binding.btnDeleteAdvance.setOnClickListener { onDeleteClick(advance) }
         }

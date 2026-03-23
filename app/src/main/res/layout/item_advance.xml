@@ -20,7 +20,7 @@
             android:id="@+id/accentBar"
             android:layout_width="4dp"
             android:layout_height="0dp"
-            android:background="#FFA500"
+            android:background="#F97316"
             app:layout_constraintBottom_toBottomOf="@+id/llInfo"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/llInfo" />
@@ -36,6 +36,7 @@
             app:layout_constraintStart_toEndOf="@+id/accentBar"
             app:layout_constraintTop_toTopOf="parent">
 
+            <!-- Amount -->
             <TextView
                 android:id="@+id/tvAdvanceAmount"
                 android:layout_width="wrap_content"
@@ -44,6 +45,7 @@
                 android:textStyle="bold"
                 android:textColor="#E65100" />
 
+            <!-- Description -->
             <TextView
                 android:id="@+id/tvAdvanceDescription"
                 android:layout_width="wrap_content"
@@ -52,13 +54,36 @@
                 android:textSize="13sp"
                 android:textColor="#374151" />
 
-            <TextView
-                android:id="@+id/tvAdvanceDate"
+            <!-- Date + Time row -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textSize="12sp"
-                android:textColor="#9CA3AF" />
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvAdvanceDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="#9CA3AF" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="  •  "
+                    android:textSize="12sp"
+                    android:textColor="#D1D5DB" />
+
+                <TextView
+                    android:id="@+id/tvAdvanceTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="#9CA3AF" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
