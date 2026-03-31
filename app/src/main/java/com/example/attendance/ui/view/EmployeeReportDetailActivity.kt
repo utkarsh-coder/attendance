@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.attendance.data.local.AppDatabase
 import com.example.attendance.data.local.Attendance
+import com.example.attendance.data.repository.AdvanceRepository
 import com.example.attendance.data.repository.AttendanceRepository
 import com.example.attendance.databinding.ActivityEmployeeReportDetailBinding
 import com.example.attendance.databinding.DialogEditAttendanceBinding
@@ -28,7 +29,11 @@ class EmployeeReportDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEmployeeReportDetailBinding
     private val viewModel: ReportsViewModel by viewModels {
-        ReportsViewModelFactory(AttendanceRepository(AppDatabase.getDatabase(this).attendanceDao()))
+        val database = AppDatabase.getDatabase(this)
+        ReportsViewModelFactory(
+            AttendanceRepository(database.attendanceDao()),
+            AdvanceRepository(database.advanceDao())
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
