@@ -120,14 +120,17 @@ class EmployeeReportDetailActivity : AppCompatActivity() {
         dialogBinding.btnEditCheckOut.text = "Out: ${selectedCheckOut?.let { TimeUtils.formatTime(it) } ?: "--"}"
 
         dialogBinding.btnEditCheckIn.setOnClickListener {
-            showTimePicker(selectedCheckIn) { calendar ->
+            // When editing check-in, keep it on its original date
+            showTimePicker(selectedCheckIn, selectedCheckIn) { calendar ->
                 selectedCheckIn = calendar.timeInMillis
                 dialogBinding.btnEditCheckIn.text = "In: ${TimeUtils.formatTime(selectedCheckIn)}"
             }
         }
 
         dialogBinding.btnEditCheckOut.setOnClickListener {
-            showTimePicker(selectedCheckOut ?: System.currentTimeMillis()) { calendar ->
+            // When editing check-out, always force it to be on the SAME DATE as the current check-in
+            val baseTimeForCheckOut = selectedCheckIn
+            showTimePicker(baseTimeForCheckOut, selectedCheckOut ?: selectedCheckIn) { calendar ->
                 selectedCheckOut = calendar.timeInMillis
                 dialogBinding.btnEditCheckOut.text = "Out: ${TimeUtils.formatTime(selectedCheckOut!!)}"
             }
@@ -152,13 +155,14 @@ class EmployeeReportDetailActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun showTimePicker(initialTime: Long, onTimeSelected: (Calendar) -> Unit) {
+    private fun showTimePicker(dateSourceTime: Long, initialTime: Long, onTimeSelected: (Calendar) -> Unit) {
         val calendar = Calendar.getInstance().apply { timeInMillis = initialTime }
         TimePickerDialog(
             this,
             { _, hourOfDay, minute ->
                 val result = Calendar.getInstance().apply {
-                    timeInMillis = initialTime
+                    // Force the date to be the SAME as dateSourceTime (the original record's date)
+                    timeInMillis = dateSourceTime
                     set(Calendar.HOUR_OF_DAY, hourOfDay)
                     set(Calendar.MINUTE, minute)
                     set(Calendar.SECOND, 0)

@@ -57,6 +57,10 @@ class AttendanceTabFragment : Fragment() {
 
     private fun showEditDialog(attendance: Attendance) {
         val dialogBinding = DialogEditAttendanceBinding.inflate(layoutInflater)
+        
+        // We use the original check-in time as the anchor for the date
+        val dateAnchor = attendance.checkInTime
+        
         var selectedCheckIn = attendance.checkInTime
         var selectedCheckOut = attendance.checkOutTime
 
@@ -64,13 +68,14 @@ class AttendanceTabFragment : Fragment() {
         dialogBinding.btnEditCheckOut.text = "Out: ${selectedCheckOut?.let { TimeUtils.formatTime(it) } ?: "--"}"
 
         dialogBinding.btnEditCheckIn.setOnClickListener {
-            showTimePicker(selectedCheckIn) { cal ->
+            showTimePicker(dateAnchor, selectedCheckIn) { cal ->
                 selectedCheckIn = cal.timeInMillis
                 dialogBinding.btnEditCheckIn.text = "In: ${TimeUtils.formatTime(selectedCheckIn)}"
             }
         }
         dialogBinding.btnEditCheckOut.setOnClickListener {
-            showTimePicker(selectedCheckOut ?: System.currentTimeMillis()) { cal ->
+            // Force the checkout to be on the same date as the check-in anchor
+            showTimePicker(dateAnchor, selectedCheckOut ?: selectedCheckIn) { cal ->
                 selectedCheckOut = cal.timeInMillis
                 dialogBinding.btnEditCheckOut.text = "Out: ${TimeUtils.formatTime(selectedCheckOut!!)}"
             }
@@ -109,16 +114,18 @@ class AttendanceTabFragment : Fragment() {
             .show()
     }
 
-    private fun showTimePicker(initialTime: Long, onSelected: (Calendar) -> Unit) {
+    private fun showTimePicker(dateAnchor: Long, initialTime: Long, onSelected: (Calendar) -> Unit) {
         val cal = Calendar.getInstance().apply { timeInMillis = initialTime }
         TimePickerDialog(requireContext(), { _, h, m ->
-            onSelected(Calendar.getInstance().apply {
-                timeInMillis = initialTime
+            val result = Calendar.getInstance().apply {
+                // Pin to the date provided by dateAnchor
+                timeInMillis = dateAnchor
                 set(Calendar.HOUR_OF_DAY, h)
                 set(Calendar.MINUTE, m)
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
-            })
+            }
+            onSelected(result)
         }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show()
     }
 
